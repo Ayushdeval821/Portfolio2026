@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{
+  dark: localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches),
+  scrolled: false,
+  mobileMenu: false,
+  progress: 0
+}" :class="{'dark':dark}" x-init="
+  $watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+  window.addEventListener('scroll', () => {
+    scrolled = window.scrollY > 20;
+    progress = Math.min(100, Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100));
+  }, { passive: true });
+" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Technical Case Study: NeuroLearnX – AI-Powered Machine Learning Learning Platform engineered by Ayush Deval using Python, React.js, FastAPI, PyTorch, Hugging Face, and LangChain."/>
+  <meta name="author" content="Ayush Deval"/>
+  <meta property="og:title" content="NeuroLearnX Case Study · Ayush Deval (AI Engineer)"/>
+  <meta property="og:type" content="article"/>
+  <title>NeuroLearnX — Case Study · Ayush Deval | AI Engineer</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&display=swap" rel="stylesheet"/>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { display: ['PT Sans','sans-serif'], body: ['DM Sans','sans-serif'] },
+          colors: { 
+            accent: '#FF6B2B', 
+            'accent-light': '#FF8F5C' 
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;}
+    html{font-family:'DM Sans',sans-serif;}
+    h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif;}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#FF6B2B;border-radius:99px;}
+    body{transition:background-color .3s,color .3s;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+    .nav-link{position:relative;}
+    .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1.5px;background:currentColor;transition:width .25s cubic-bezier(.4,0,.2,1);}
+    .nav-link:hover::after{width:100%;}
+    .btn-primary{position:relative;overflow:hidden;}
+    .btn-primary::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.18);transform:skewX(-20deg);transition:left .4s cubic-bezier(.4,0,.2,1);}
+    .btn-primary:hover::after{left:160%;}
+    [x-cloak]{display:none!important;}
+
+    /* Reading progress */
+    .progress-bar{position:fixed;top:0;left:0;height:3px;background:#FF6B2B;z-index:100;transition:width .1s linear;}
+
+    /* Reveal */
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
+
+    /* Case study prose */
+    .prose-cs h2{font-family:'PT Sans',sans-serif;font-size:1.6rem;font-weight:700;margin:2.75rem 0 1rem;line-height:1.25;color:inherit;}
+    .prose-cs h3{font-family:'PT Sans',sans-serif;font-size:1.2rem;font-weight:700;margin:2rem 0 .6rem;line-height:1.3;color:#FF6B2B;}
+    .prose-cs p{margin:0 0 1.4rem;line-height:1.82;color:#52525b;}
+    .dark .prose-cs p{color:#a1a1aa;}
+    .prose-cs ul{margin:0 0 1.4rem 1.5rem;list-style:disc;}
+    .prose-cs li{margin-bottom:.45rem;line-height:1.7;color:#52525b;}
+    .dark .prose-cs li{color:#a1a1aa;}
+    .prose-cs blockquote{border-left:3px solid #FF6B2B;padding:.75rem 1.25rem;margin:0 0 1.8rem;background:#fff7f4;border-radius:0 8px 8px 0;}
+    .dark .prose-cs blockquote{background:#27272a;}
+    .prose-cs blockquote p{color:#52525b;font-style:italic;margin:0;}
+    .dark .prose-cs blockquote p{color:#a1a1aa;}
+    .prose-cs hr{border:none;border-top:1px solid #e4e4e7;margin:2.5rem 0;}
+    .dark .prose-cs hr{border-top-color:#27272a;}
+    .prose-cs a{color:#FF6B2B;text-decoration:underline;text-underline-offset:3px;}
+
+    /* Stat card */
+    .stat-card{border-left:3px solid #FF6B2B;}
+    .step-badge{width:2rem;height:2rem;min-width:2rem;border-radius:50%;background:#FF6B2B;color:#fff;font-family:'PT Sans',sans-serif;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
+  </style>
+</head>
+
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-body antialiased selection:bg-accent selection:text-white">
+
+  <!-- Reading progress bar -->
+  <div class="progress-bar" :style="`width:${progress}%`" role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
+
+  <!-- Header / Navigation -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+    :class="scrolled ? 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md shadow-sm shadow-black/5 border-b border-zinc-200/50 dark:border-zinc-800/50' : 'bg-transparent'">
+    <nav class="max-w-[95%] mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
+      <a href="index.html" class="font-display font-bold text-xl tracking-tight z-10 flex items-center gap-1.5">
+        <span class="w-8 h-8 rounded-lg bg-accent text-white flex items-center justify-center font-bold text-sm">AD</span>
+        <span class="text-zinc-900 dark:text-white">ayush</span><span class="text-accent">deval</span>
+      </a>
+
+      <ul class="hidden md:flex items-center gap-8 text-sm font-medium" role="list">
+        <li><a href="index.html#about" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">About</a></li>
+        <li><a href="index.html#skills" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Skills</a></li>
+        <li><a href="index.html#experience" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Experience</a></li>
+        <li><a href="projects.html" class="nav-link text-accent font-semibold">Projects</a></li>
+        <li><a href="index.html#education" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Education</a></li>
+        <li><a href="index.html#awards" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Awards</a></li>
+        <li><a href="index.html#contact" class="nav-link text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <button @click="dark=!dark"
+          class="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          :aria-label="dark ? 'Light mode' : 'Dark mode'">
+          <svg x-show="!dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <svg x-show="dark" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+        </button>
+        <a href="index.html#contact" class="hidden md:inline-flex items-center gap-2 btn-primary bg-accent text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-accent-light transition-colors">Get in touch &rarr;</a>
+        
+        <button @click="mobileMenu=!mobileMenu" class="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800" aria-label="Toggle menu">
+          <svg x-show="!mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg x-show="mobileMenu" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div x-show="mobileMenu" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900 px-6 py-4 shadow-xl">
+      <ul class="flex flex-col gap-3 text-sm font-medium">
+        <li><a href="index.html" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Home</a></li>
+        <li><a href="projects.html" @click="mobileMenu=false" class="block text-accent font-semibold">Projects</a></li>
+        <li><a href="index.html#contact" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <article>
+      <!-- Case Study Header -->
+      <header class="pt-32 pb-10 max-w-6xl mx-auto px-6">
+        <a href="projects.html" class="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-accent transition-colors mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+          Back to all projects
+        </a>
+
+        <!-- Tags & Timeline -->
+        <div class="flex flex-wrap items-center gap-2 mb-6">
+          <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full font-medium">AI &amp; Machine Learning</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full">FastAPI</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full">React.js</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full">PyTorch</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-3 py-1 rounded-full">LangChain</span>
+          <span class="text-xs text-zinc-400 ml-2">Oct 2025 – Dec 2025</span>
+        </div>
+
+        <h1 class="reveal font-display font-bold text-4xl md:text-5xl lg:text-6xl text-zinc-900 dark:text-white leading-tight mb-6">
+          NeuroLearnX – AI-Powered Machine Learning Learning Platform
+        </h1>
+
+        <p class="reveal d1 text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed mb-10 max-w-5xl">
+          An intelligent learning ecosystem delivering personalized learning paths, AI tutoring, interactive ML labs, and real-time performance analytics built with Python, FastAPI, React.js, and Hugging Face transformer models.
+        </p>
+
+        <!-- Meta row -->
+        <div class="reveal d2 grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-t border-b border-zinc-200/80 dark:border-zinc-800">
+          <div>
+            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Architect &amp; Developer</p>
+            <p class="font-medium text-zinc-900 dark:text-white text-sm">Ayush Deval</p>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Role</p>
+            <p class="font-medium text-zinc-900 dark:text-white text-sm">AI Engineer</p>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Duration</p>
+            <p class="font-medium text-zinc-900 dark:text-white text-sm">Oct 2025 – Dec 2025</p>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 uppercase tracking-widest mb-1">Databases</p>
+            <p class="font-medium text-zinc-900 dark:text-white text-sm">MongoDB &amp; PostgreSQL</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Key Project Metrics Banner -->
+      <div class="max-w-6xl mx-auto px-6 mb-16">
+        <div class="reveal grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6 border border-zinc-200/60 dark:border-zinc-800">
+            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">FastAPI</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Asynchronous backend REST APIs</p>
+          </div>
+          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6 border border-zinc-200/60 dark:border-zinc-800">
+            <p class="font-display font-bold text-3xl text-accent">PyTorch</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Deep Learning &amp; Interactive ML Labs</p>
+          </div>
+          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6 border border-zinc-200/60 dark:border-zinc-800">
+            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">LangChain</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Contextual Question Answering</p>
+          </div>
+          <div class="stat-card bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-5 pl-6 border border-zinc-200/60 dark:border-zinc-800">
+            <p class="font-display font-bold text-3xl text-zinc-900 dark:text-white">React.js</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">Interactive Student Dashboard</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Case study details -->
+      <div class="max-w-5xl mx-auto px-6 pb-4 prose-cs">
+
+        <h2>Project Overview &amp; Motivation</h2>
+        <p>
+          Students and developers diving into Artificial Intelligence often face a fragmented experience: theoretical textbooks on one side and isolated code notebooks on the other. <strong>NeuroLearnX</strong> was engineered by Ayush Deval to solve this by providing a unified, AI-powered platform delivering personalized learning paths, an interactive AI tutor, hands-on ML experimentation labs, and automated performance analytics.
+        </p>
+
+        <blockquote>
+          <p>"NeuroLearnX bridges the gap between machine learning theory and practical model building with personalized curriculum adaptation and instant AI tutoring."</p>
+        </blockquote>
+
+        <h2>Core Engineering Features Delivered</h2>
+        <p>As documented in Ayush Deval's resume, the platform successfully fulfilled three critical milestones:</p>
+        <ul>
+          <li><strong>Personalized Learning Paths &amp; Interactive ML Labs:</strong> Dynamic recommendation system that tailors progression based on user knowledge gaps, accompanied by in-browser ML lab execution.</li>
+          <li><strong>Hugging Face &amp; LangChain Integration:</strong> Implemented AI-based recommendation and contextual question-answering engines utilizing open-source transformers and retrieval-augmented pipelines.</li>
+          <li><strong>High-Performance Full-Stack Architecture:</strong> Engineered backend REST APIs in FastAPI with dual-database persistence (MongoDB for flexible telemetry &amp; PostgreSQL for relational user progress), paired with a responsive React.js dashboard.</li>
+        </ul>
+
+        <h2>System Architecture &amp; Data Pipeline</h2>
+        <p>The platform architecture is divided into three key decoupled layers:</p>
+
+      </div>
+
+      <!-- 3-Column Architecture Highlights -->
+      <div class="max-w-7xl mx-auto px-6 mb-12">
+        <div class="reveal grid md:grid-cols-3 gap-5">
+          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-7 border border-zinc-100 dark:border-zinc-800">
+            <div class="w-10 h-10 bg-orange-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center mb-4 text-accent font-bold">1</div>
+            <h3 class="font-display font-bold text-zinc-900 dark:text-white mb-2" style="font-size:1.05rem;margin:0 0 .5rem;color:inherit;">Interactive Frontend</h3>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed" style="margin:0;color:inherit;">React.js dashboard rendering real-time performance analytics, code editor interfaces for ML labs, and responsive tutoring chats.</p>
+          </div>
+
+          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-7 border border-zinc-100 dark:border-zinc-800">
+            <div class="w-10 h-10 bg-orange-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center mb-4 text-accent font-bold">2</div>
+            <h3 class="font-display font-bold text-zinc-900 dark:text-white mb-2" style="font-size:1.05rem;margin:0 0 .5rem;color:inherit;">FastAPI API Engine</h3>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed" style="margin:0;color:inherit;">Asynchronous REST endpoints managing authentication, lab execution state, PyTorch inference triggers, and MongoDB/PostgreSQL CRUD operations.</p>
+          </div>
+
+          <div class="bg-zinc-50 dark:bg-zinc-900 rounded-2xl p-7 border border-zinc-100 dark:border-zinc-800">
+            <div class="w-10 h-10 bg-orange-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center mb-4 text-accent font-bold">3</div>
+            <h3 class="font-display font-bold text-zinc-900 dark:text-white mb-2" style="font-size:1.05rem;margin:0 0 .5rem;color:inherit;">AI &amp; LangChain Core</h3>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed" style="margin:0;color:inherit;">Hugging Face models embedded via LangChain chains to provide domain-grounded Q&amp;A on machine learning concepts and code debugging assistance.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-5xl mx-auto px-6 pb-4 prose-cs">
+
+        <h2>Technical Skills Applied</h2>
+        <p>This project synthesized multiple core competencies from Ayush Deval's technical toolkit:</p>
+        <ul>
+          <li><strong>Python &amp; PyTorch:</strong> Data modeling, custom evaluation scripts, and model loading.</li>
+          <li><strong>FastAPI &amp; REST APIs:</strong> High throughput, async request processing, and schema validation with Pydantic.</li>
+          <li><strong>LangChain &amp; Hugging Face:</strong> Prompt templates, vector indexing, and question-answering pipelines.</li>
+          <li><strong>Databases:</strong> MongoDB for session histories, lab submissions, and conversational memory; PostgreSQL for relational user management and analytics.</li>
+          <li><strong>Git &amp; Development Tooling:</strong> Systematic Git feature branching and VS Code development environment.</li>
+        </ul>
+
+        <h2>Next Steps: Speech &amp; Kubernetes Expansion</h2>
+        <p>
+          Following the completion of NeuroLearnX in December 2025, Ayush extended these AI architectures into the <strong>Multilingual Speech Translation Assistant</strong> (March–May 2026), incorporating OpenAI's Whisper model, text-to-speech transformers, Docker containers, and Kubernetes cluster orchestration.
+        </p>
+
+        <hr/>
+
+        <!-- Author box -->
+        <div class="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 not-prose flex flex-col sm:flex-row items-center gap-5">
+          <div class="w-14 h-14 rounded-2xl bg-accent text-white flex items-center justify-center font-bold text-xl shrink-0">
+            AD
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-base text-zinc-900 dark:text-white">Ayush Deval</h3>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-2">AI Engineer &amp; Full-Stack Web Developer · Bareilly, Uttar Pradesh</p>
+            <div class="flex items-center gap-3 text-xs text-accent">
+              <a href="mailto:devalayush25@gmail.com" class="hover:underline">devalayush25@gmail.com</a>
+              <span>•</span>
+              <a href="https://www.linkedin.com/in/-ayush-deval/" target="_blank" rel="noopener noreferrer" class="hover:underline">LinkedIn</a>
+              <span>•</span>
+              <a href="https://github.com/Ayushdeval821" target="_blank" rel="noopener noreferrer" class="hover:underline">GitHub</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- Bottom Navigation -->
+    <section class="py-16 max-w-6xl mx-auto px-6">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+        <a href="projects.html" class="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-accent">
+          &larr; All Projects
+        </a>
+        <a href="blog-article.html" class="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline">
+          Read: Multilingual Speech Translation Assistant &rarr;
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-zinc-100 dark:border-zinc-900 bg-white dark:bg-zinc-950">
+    <div class="max-w-[95%] mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">
+        &copy; Ayush Deval. AI Engineer · Bareilly, Uttar Pradesh
+      </p>
+      <div class="flex items-center gap-4 text-xs text-zinc-500">
+        <a href="index.html" class="hover:text-accent">Home</a>
+        <span>•</span>
+        <a href="projects.html" class="hover:text-accent">Projects</a>
+        <span>•</span>
+        <a href="index.html#contact" class="hover:text-accent">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
